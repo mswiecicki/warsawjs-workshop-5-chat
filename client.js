@@ -17,6 +17,7 @@ readline.prompt();
 readline.on('line', (line) => {
     if (line !== '/exit') {
         io.emit('message', line);
+        readline.prompt();
     } else {
         readline.close();
         process.exit();
