@@ -9,7 +9,7 @@ function _hashPassword(password) {
 }
 
 function _getUser(username) {
-    return db('users').where({username}).first()
+    return db.table('users').where({username}).first()
 }
 
 function _isUsernameTaken(username) {
@@ -24,7 +24,8 @@ function registerUser(username, password) {
             if (isTaken) {
                 return false;
             } else {
-                return db('username').insert({username, password: _hashPassword(password)}).then((insertedIDs) => insertedIDs[0]);
+                return db.table('users').insert({username, password: _hashPassword(password)})
+                    .then((insertedIDs) => insertedIDs[0]);
             }
         });
 }
