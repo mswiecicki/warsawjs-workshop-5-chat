@@ -7,13 +7,11 @@ io.on('connection', (client) => {
     client.on('message', (msg) => {
         console.log(`incoming message: ${msg}`);
         client.broadcast.emit('message', msg);
+    });
+    client.on('disconnect', () => {
+        console.log(`client: ${client.id} disconnected...`);
     })
 });
-
-io.on('disconnect', (client) => {
-    console.log(`client: ${client.id} disconnected...`);
-})
-
 
 console.log('Starting listening on port: 3000...');
 io.listen(3000);
