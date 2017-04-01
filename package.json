@@ -4,12 +4,16 @@
   "description": "Proof of Concept for the idea of a task for the 5th WarsawJS Workshop - cli chat app with Node and Socket.io",
   "main": "server.js",
   "scripts": {
+    "db:setup": "knex migrate:latest --env production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Marek Święcicki 2017",
   "license": "MIT",
   "dependencies": {
+    "knex": "^0.12.9",
+    "sha.js": "^2.4.8",
     "socket.io": "^1.7.3",
-    "socket.io-client": "^1.7.3"
+    "socket.io-client": "^1.7.3",
+    "sqlite3": "^3.1.8"
   }
 }
