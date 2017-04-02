@@ -4,10 +4,10 @@ module.exports = {
         client: 'sqlite3',
         useNullAsDefault: true,
         connection: {
-            filename: './chat_users.db'
+            filename: './db/chat_users.db'
         },
         migrations: {
-            directory: './migrations'
+            directory: './db/migrations'
         }
     }
 
