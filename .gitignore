@@ -1,3 +1,4 @@
 .idea/*
 node_modules/*
-chat_users.db
+db/chat_users.db
+npm-debug.log
