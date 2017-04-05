@@ -6,7 +6,9 @@
   "scripts": {
     "db:clear": "rm -f ./db/chat_users.db",
     "db:bootstrap": "knex migrate:latest --env production",
-    "db:rebuild": "npm run db:clear && npm run db:bootstrap"
+    "db:rebuild": "npm run db:clear && npm run db:bootstrap",
+    "start:server": "node ./server/server.js",
+    "start:client": "node ./client.js"
   },
   "author": "Marek Święcicki 2017",
   "license": "MIT",
