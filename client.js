@@ -8,7 +8,8 @@ const readline = require('readline').createInterface({
     output: process.stdout
 });
 
-let LOGGED_AS = null;
+let USERNAME = null;
+let TOKEN = null;
 
 function clearPrompt() {
     process.stdout.cursorTo(0);
@@ -22,10 +23,11 @@ socket.on('server_message', (srv_msg) => {
     readline.prompt();
 });
 
-socket.on('logged_in', (username) => {
-    if (username) {
-        LOGGED_AS = username;
-        readline.setPrompt(`${username}: `);
+socket.on('logged_in', (loginObject) => {
+    if (loginObject) {
+        USERNAME = loginObject.username;
+        TOKEN = loginObject.token;
+        readline.setPrompt(`${loginObject.username}: `);
         readline.prompt();
     } else {
         readline.prompt();
@@ -43,17 +45,17 @@ readline.on('line', (line) => {
     if (line !== '/exit') {
         if (line.startsWith('/register')) {
             let args = line.split(' ');
-            socket.emit('command', {type: 'register', data: {username: args[1], password: args[2]} });
+            socket.emit('command', {type: 'register', data: {username: args[1], password: args[2]}, token: TOKEN });
         } else if (line.startsWith('/login')) {
             let args = line.split(' ');
-            socket.emit('command', {type: 'login', data: {username: args[1], password: args[2]} });
+            socket.emit('command', {type: 'login', data: {username: args[1], password: args[2]}, token: TOKEN });
             clearPrompt();
         } else if (line.startsWith('/logout')) {
-            socket.emit('command', {type: 'logout', data: {} });
-            LOGGED_AS = null;
+            USERNAME = null;
+            TOKEN = null;
             readline.setPrompt('> ');
         } else if (line.trim().length) {
-            socket.emit('message', {from: LOGGED_AS, body: line});
+            socket.emit('message', {from: USERNAME, body: line, token: TOKEN});
         }
         readline.prompt();
     } else {
@@ -65,5 +67,4 @@ readline.on('line', (line) => {
 //on startup
 console.log("To start chatting you need to log in: /login <username> <password>");
 console.log("If you don't have an account, register via: /register <username> <password>");
-console.log("Remember to login after registration!");
 readline.prompt();

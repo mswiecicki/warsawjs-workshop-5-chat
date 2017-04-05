@@ -3,13 +3,21 @@
 const registerCommand = require('./registerCmd.js');
 const loginCommand = require('./loginCmd.js');
 
-function dispatchCommands(client) {
-    return function(command) {
-        switch(command.type) {
-            case 'register': registerCommand(client, command.data); break;
-            case 'login': loginCommand(client, command.data); break;
-        }
+function publicDispatchCommands(client, command) {
+    switch(command.type) {
+        case 'register': registerCommand(client, command.data); break;
+        case 'login': loginCommand(client, command.data); break;
     }
 }
 
-module.exports = dispatchCommands;
+function dispatchCommands(client, command) {
+    publicDispatchCommands(client, command);
+    switch(command.type) {
+        // for commands requiring being logged in
+    }
+}
+
+module.exports = {
+    publicDispatchCommands,
+    dispatchCommands
+};
