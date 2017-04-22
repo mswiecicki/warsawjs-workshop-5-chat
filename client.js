@@ -8,59 +8,62 @@ const readline = require('readline').createInterface({
     output: process.stdout
 });
 
-let USERNAME = null;
-let TOKEN = null;
-
 function clearPrompt() {
     process.stdout.cursorTo(0);
     process.stdout.clearLine();
 }
 
-// receiving stuff from server
-socket.on('server_message', (srv_msg) => {
+function writeToConsole(str) {
     clearPrompt();
-    console.log(`## > \"${srv_msg}\"`);
+    console.log(str);
     readline.prompt();
-});
+}
 
-socket.on('logged_in', (loginObject) => {
-    if (loginObject) {
-        USERNAME = loginObject.username;
-        TOKEN = loginObject.token;
-        readline.setPrompt(`${loginObject.username}: `);
-        readline.prompt();
-    } else {
-        readline.prompt();
+let USER = {};
+
+// receiving stuff from server
+socket.on('server_message', writeToConsole);
+
+socket.on('logged_in', ({username, token}) => {
+    if (username && token) {
+        USER = {username, token};
+        readline.setPrompt(`${username}: `);
     }
+    readline.prompt();
 })
 
 socket.on('message', (msg) => {
-    clearPrompt();
-    console.log(`${msg.from}: ${msg.body}`);
-    readline.prompt();
+    writeToConsole(`${msg.from}: ${msg.body}`);
 });
 
 // sending stuff to server
 readline.on('line', (line) => {
-    if (line !== '/exit') {
-        if (line.startsWith('/register')) {
-            let args = line.split(' ');
-            socket.emit('command', {type: 'register', data: {username: args[1], password: args[2]}, token: TOKEN });
-        } else if (line.startsWith('/login')) {
-            let args = line.split(' ');
-            socket.emit('command', {type: 'login', data: {username: args[1], password: args[2]}, token: TOKEN });
+    const args = line.split(' ');
+    switch(args[0]) {
+        case '/exit':
+            readline.close();
+            process.exit();
+            break;
+        case '/register':
+            socket.emit('command', {type: 'register', data: {username: args[1], password: args[2]}});
+            readline.prompt();
+            break;
+        case '/login':
+            socket.emit('command', {type: 'login', data: {username: args[1], password: args[2]}});
             clearPrompt();
-        } else if (line.startsWith('/logout')) {
-            USERNAME = null;
-            TOKEN = null;
+            readline.prompt();
+            break;
+        case '/logout':
+            USER = {};
             readline.setPrompt('> ');
-        } else if (line.trim().length) {
-            socket.emit('message', {from: USERNAME, body: line, token: TOKEN});
-        }
-        readline.prompt();
-    } else {
-        readline.close();
-        process.exit();
+            readline.prompt();
+            break;
+        default:
+            if (line.trim()) {
+                socket.emit('message', {from: USER.username || '', body: line, token: USER.token || ''});
+            }
+            readline.prompt();
+            break;
     }
 });
 
