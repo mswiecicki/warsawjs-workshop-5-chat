@@ -5,7 +5,7 @@ const SECRET = require('./settings.js')['SECRET'];
 
 function authenticate(client, successFn, failureFn) {
     return function(event) {
-        JWT.verify(event.token, SECRET, function(err, result) {
+        JWT.verify(event.token, SECRET, {algorithms: ["HS256"]}, function(err, result) {
             if (!err) {
                 successFn(client, event);
             } else {

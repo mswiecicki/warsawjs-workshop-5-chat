@@ -9,7 +9,7 @@ function loginCommand(client, data) {
         .then((result) => {
             if (result) {
                 console.log(`User: ${data.username} has successfully logged in`);
-                let token = JWT.sign({username: data.username}, SECRET);
+                let token = JWT.sign({username: data.username}, SECRET, {expiresIn: "4h"});
                 client.join('chat');
                 client.emit('logged_in', {username: data.username, token});
             } else {
